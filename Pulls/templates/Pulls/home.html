@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Query</title>
+</head>
+<body>
+    <h1>Stock Query Form</h1>
+    <form method="post" action="{% url 'process_stock_query' %}">
+        {% csrf_token %}
+        <p>
+            <label for="id_stock_ticker">Stock Ticker *</label>
+            <input type="text" name="stock_ticker" id="id_stock_ticker" value="AAPL" required>
+            <small>Specify a case-sensitive ticker symbol. For example, AAPL represents Apple Inc.</small>
+        </p>
+        <p>
+            <label for="id_multiplier">Multiplier *</label>
+            <input type="number" name="multiplier" id="id_multiplier" value="1" required>
+            <small>The size of the timespan multiplier.</small>
+        </p>
+        <p>
+            <label for="id_timespan">Timespan *</label>
+            <input type="text" name="timespan" id="id_timespan" value="day" required>
+            <small>The size of the time window.</small>
+        </p>
+        <p>
+            <label for="id_from">From Date *</label>
+            <input type="date" name="from" id="id_from" value="2023-01-09" required>
+            <small>The start of the aggregate time window. Either a date with the format YYYY-MM-DD or a millisecond timestamp.</small>
+        </p>
+        <p>
+            <label for="id_to">To Date *</label>
+            <input type="date" name="to" id="id_to" value="2023-01-09" required>
+            <small>The end of the aggregate time window. Either a date with the format YYYY-MM-DD or a millisecond timestamp.</small>
+        </p>
+        <p>
+            <label for="id_adjusted">Adjusted</label>
+            <input type="checkbox" name="adjusted" id="id_adjusted" checked>
+            <small>Whether or not the results are adjusted for splits. By default, results are adjusted. Set this to false to get results that are NOT adjusted for splits.</small>
+        </p>
+        <p>
+            <label for="id_sort">Sort</label>
+            <select name="sort" id="id_sort">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+            <small>Sort the results by timestamp. asc will return results in ascending order (oldest at the top), desc will return results in descending order (newest at the top).</small>
+        </p>
+        <p>
+            <label for="id_limit">Limit</label>
+            <input type="number" name="limit" id="id_limit">
+        </p>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
