@@ -5,41 +5,7 @@ from datetime import datetime
 import requests
 import pandas as pd
 import time
-
-API_KEY = "oAuWrjlpFZgzGC7zBlolCz8awHWN6XOm"
-
-def index(request):
-    return render(request, "Pulls/home.html")
-
-
-def process_stock_query(request):
-    if request.method == "POST":
-        # Process the submitted data
-        query = {
-            "stock_ticker": request.POST.get("stock_ticker"),
-            "multiplier": request.POST.get("multiplier"),
-            "timespan": request.POST.get("timespan"),
-            "start_date": request.POST.get("from"),
-            "end_date": request.POST.get("to"),
-            "adjusted": request.POST.get("adjusted") == "on",
-            "sort": request.POST.get("sort"),
-            "limit": request.POST.get("limit"),
-        }
-        print("Received query in process_stock_query:")
-        for key, value in query.items():
-            print(f"{key}: {value}")
-        pull_data(query)
-        return HttpResponse(f"Received data in process_stock_query: {query}")
-    return HttpResponse("Invalid request method.")
-
-
-from django.shortcuts import render
-from django.template import loader
-from django.http import HttpResponse
-from datetime import datetime
-import requests
-import pandas as pd
-import time
+import os
 
 API_KEY = "oAuWrjlpFZgzGC7zBlolCz8awHWN6XOm"
 
@@ -60,6 +26,8 @@ def process_stock_query(request):
             "adjusted": request.POST.get("adjusted") == "on",
             "sort": request.POST.get("sort"),
             "limit": request.POST.get("limit"),
+            "file_name": request.POST.get("file_name"),
+            "directory_path": request.POST.get("directory_path"),
         }
         print("Received query in process_stock_query:")
         for key, value in query.items():
@@ -75,7 +43,7 @@ def pull_data(query):
     PARAMS = {
         "adjusted": "true",
         "sort": "asc",
-        "limit": "50000",
+        "limit": query['limit'],
         "apiKey": API_KEY,
     }
 
@@ -115,6 +83,9 @@ def pull_data(query):
 
     # Save to CSV file
     if not stock_data.empty:
-        stock_data.to_csv(r"C:\Users\dahbo\Downloads\stock_data.csv", index=False)
+        file_path = os.path.join(query['directory_path'], f"{query['file_name']}.csv")
+        file_path = os.path.normpath(file_path)  # Normalizes the path (e.g., converts forward slashes to backward slashes on Windows)
+        
+        stock_data.to_csv(file_path, index=False)
     else:
         print("No data to save.")
